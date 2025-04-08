@@ -1,6 +1,6 @@
-
-    export default function Todo(props) {
-        const updateTodo = async (todoId, todoStatus) => {
+export default function Todo(props) {
+    const updateTodo = async (todoId, todoStatus) => {
+        try {
             const res = await fetch(`/api/todos/${todoId}`, {
                 method: "PUT",
                 body: JSON.stringify({ status: todoStatus }),
@@ -12,18 +12,21 @@
     
             if (json.acknowledged) {
                 props.setTodos(currentTodos => {
-                    return currentTodos
-                    .map((currentTodo) => {
+                    return currentTodos.map((currentTodo) => {
                         if (currentTodo._id === todoId) {
                             return { ...currentTodo, status: !currentTodo.status }
                         }
                         return currentTodo;
                     });
-                })
+                });
             }
+        } catch (error) {
+            console.error('Error updating todo:', error);
         }
+    }
 
-        const deleteTodo = async (todoId) => {
+    const deleteTodo = async (todoId) => {
+        try {
             const res = await fetch(`/api/todos/${todoId}`, {
                 method: "DELETE"
             });
@@ -31,16 +34,18 @@
             
             if (json.acknowledged) {
                 props.setTodos(currentTodos => {
-                    return currentTodos
-                        .filter((currentTodo) => (currentTodo._id !== todoId));
+                    return currentTodos.filter((currentTodo) => (currentTodo._id !== todoId));
                 });
             }
+        } catch (error) {
+            console.error('Error deleting todo:', error);
         }
+    }
 
     return (
-      <div className="todo">
-                <p>{props.todo.todo}</p>
-                <div>
+        <div className="todo">
+            <p>{props.todo.todo}</p>
+            <div>
                 <button
                     className="todo__status"
                     onClick={() => updateTodo(props.todo._id, props.todo.status)}
@@ -53,7 +58,7 @@
                 >
                     🗑️
                 </button>
-                </div>
-              </div>
+            </div>
+        </div>
     )
-  }
+}

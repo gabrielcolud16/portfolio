@@ -18,7 +18,11 @@ router.post("/todos", async (req, res) => {
   
     const newTodo = await collection.insertOne({ todo, status: false });
   
-    res.status(201).json({ todo, status: false, _id: newTodo.insertedId });
+    res.status(201).json({ 
+        todo, 
+        status: false, 
+        _id: newTodo.insertedId.toString() 
+    });
   })
 
 // DELETE /todos/:id

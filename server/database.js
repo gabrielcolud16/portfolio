@@ -16,14 +16,22 @@ const connectToMongoDB = async () => {
   if (!client) {
     try {
       client = await MongoClient.connect(uri, options);
-      console.log("Connected to MongoDB");
+      // Verify the connection
+      await client.db("admin").command({ ping: 1 });
+      console.log("Successfully connected to MongoDB.");
     } catch (error) {
-      console.log(error);
+      console.error("MongoDB connection error:", error);
+      throw error; // Re-throw the error to handle it in the calling code
     }
   }
   return client;
 };
 
-const getConnectedClient = () => client;
+const getConnectedClient = () => {
+  if (!client) {
+    throw new Error("MongoDB client is not connected. Call connectToMongoDB() first.");
+  }
+  return client;
+};
 
 module.exports = { connectToMongoDB, getConnectedClient };
